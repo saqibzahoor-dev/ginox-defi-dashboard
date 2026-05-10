@@ -32,19 +32,19 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl'
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="fixed inset-0 bg-[rgba(1,5,16,0.85)] backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-[rgba(4,6,14,0.85)]" onClick={onClose} />
       <div
-        className={`relative w-full ${maxWidth} animate-slide-up rounded-2xl border border-white/[0.06] bg-[rgba(10,14,30,0.95)] p-6 shadow-[0_24px_80px_-12px_rgba(0,0,0,0.6)] backdrop-blur-xl`}
+        className={`relative w-full ${maxWidth} animate-slide-up rounded-lg border border-surface-border bg-surface p-5`}
         role="dialog"
         aria-modal="true"
         aria-label={title}
       >
         {title && (
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-[15px] font-semibold text-white">{title}</h2>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.04] text-secondary transition-all hover:border-white/[0.08] hover:bg-white/[0.04] hover:text-primary"
+              className="flex h-7 w-7 items-center justify-center rounded text-secondary transition-colors hover:bg-white/[0.04] hover:text-primary"
               aria-label="Close"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

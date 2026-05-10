@@ -1,19 +1,20 @@
-import { GlassCard } from '@/shared/components';
 import { formatCurrency, formatPercent, formatVolume } from '@/shared/utils/format';
 import { Sparkline } from './Sparkline';
 import type { TraderCard as TraderCardType } from '@/shared/types';
 
 interface TraderCardProps {
   trader: TraderCardType;
+  rank: number;
   onClick: (trader: TraderCardType) => void;
 }
 
-export function TraderCard({ trader, onClick }: TraderCardProps) {
+export function TraderCard({ trader, rank, onClick }: TraderCardProps) {
   return (
-    <GlassCard
-      hoverable
-      className="animate-fade-in"
+    <tr
       onClick={() => onClick(trader)}
+      className={`cursor-pointer border-b border-surface-border/50 transition-colors hover:bg-surface-hover ${
+        rank <= 3 ? 'bg-[rgba(255,183,77,0.03)]' : ''
+      }`}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -23,55 +24,62 @@ export function TraderCard({ trader, onClick }: TraderCardProps) {
         }
       }}
     >
-      <div className="mb-3.5 flex items-center gap-3">
-        <img
-          src={trader.image}
-          alt={trader.name}
-          className="h-9 w-9 rounded-xl ring-1 ring-white/[0.06]"
-          loading="lazy"
-        />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold text-white">{trader.name}</p>
-          <p className="text-[11px] text-secondary">{trader.symbol}</p>
+      <td className="px-4 py-3 text-[13px]">
+        {rank <= 3 ? (
+          <span
+            className={`inline-flex h-6 w-6 items-center justify-center rounded text-[11px] font-bold ${
+              rank === 1
+                ? 'bg-yellow-500/10 text-yellow-400'
+                : rank === 2
+                  ? 'bg-gray-400/10 text-gray-300'
+                  : 'bg-amber-700/10 text-amber-500'
+            }`}
+          >
+            {rank}
+          </span>
+        ) : (
+          <span className="text-secondary">{rank}</span>
+        )}
+      </td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <img
+            src={trader.image}
+            alt={trader.name}
+            className="h-7 w-7 rounded-full"
+            loading="lazy"
+          />
+          <div className="min-w-0">
+            <p className="truncate text-[13px] font-medium text-white">{trader.name}</p>
+            <p className="text-[11px] text-secondary">{trader.symbol}</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="font-mono text-[14px] font-bold text-white">
-            ${trader.currentPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-          </p>
+      </td>
+      <td className="px-4 py-3 text-right font-mono text-[13px] text-white">
+        ${trader.currentPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+      </td>
+      <td className="px-4 py-3">
+        <div className="mx-auto w-20">
+          <Sparkline data={trader.sparklineData} width={80} height={24} positive={trader.roi >= 0} />
         </div>
-      </div>
-
-      <div className="mb-3.5 overflow-hidden rounded-lg bg-white/[0.02] p-2">
-        <Sparkline
-          data={trader.sparklineData}
-          width={260}
-          height={44}
-          positive={trader.roi >= 0}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-secondary">ROI</p>
-          <p className={`font-mono text-[13px] font-bold ${trader.roi >= 0 ? 'text-bullish' : 'text-bearish'}`}>
-            {trader.roi >= 0 ? '+' : ''}{formatPercent(trader.roi)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-secondary">PNL</p>
-          <p className={`font-mono text-[13px] font-bold ${trader.pnl >= 0 ? 'text-bullish' : 'text-bearish'}`}>
-            {formatCurrency(trader.pnl)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-secondary">Win Rate</p>
-          <p className="font-mono text-[13px] font-bold text-white">{trader.winRate}%</p>
-        </div>
-        <div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-secondary">Volume</p>
-          <p className="font-mono text-[13px] font-bold text-white">{formatVolume(trader.volume)}</p>
-        </div>
-      </div>
-    </GlassCard>
+      </td>
+      <td
+        className={`px-4 py-3 text-right font-mono text-[13px] font-medium ${
+          trader.roi >= 0 ? 'text-bullish' : 'text-bearish'
+        }`}
+      >
+        {formatPercent(trader.roi)}
+      </td>
+      <td
+        className={`px-4 py-3 text-right font-mono text-[13px] font-medium ${
+          trader.pnl >= 0 ? 'text-bullish' : 'text-bearish'
+        }`}
+      >
+        {formatCurrency(trader.pnl)}
+      </td>
+      <td className="px-4 py-3 text-right font-mono text-[13px] text-white">
+        {formatVolume(trader.volume)}
+      </td>
+    </tr>
   );
 }

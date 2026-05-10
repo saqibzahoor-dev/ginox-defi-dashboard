@@ -14,7 +14,7 @@ export function Skeleton({ className, variant = 'rectangular', width, height }: 
   const variantClasses = {
     text: 'rounded',
     circular: 'rounded-full',
-    rectangular: 'rounded-lg',
+    rectangular: 'rounded',
   };
 
   return (
@@ -27,20 +27,18 @@ export function Skeleton({ className, variant = 'rectangular', width, height }: 
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-2xl border border-white/[0.04] bg-[rgba(12,16,36,0.65)] p-5">
-      <div className="mb-4 flex items-center gap-3">
-        <Skeleton variant="circular" width={36} height={36} />
+    <div className="rounded-lg border border-surface-border bg-surface p-4">
+      <div className="mb-3 flex items-center gap-3">
+        <Skeleton variant="circular" width={28} height={28} />
         <div className="flex-1">
-          <Skeleton className="mb-2 h-4 w-24" />
-          <Skeleton className="h-3 w-16" />
+          <Skeleton className="mb-1.5 h-3.5 w-20" />
+          <Skeleton className="h-3 w-12" />
         </div>
       </div>
-      <Skeleton className="mb-4 h-[44px] w-full rounded-lg" />
-      <div className="grid grid-cols-2 gap-3">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
+      <Skeleton className="mb-3 h-6 w-full" />
+      <div className="grid grid-cols-2 gap-2">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
       </div>
     </div>
   );
@@ -48,16 +46,10 @@ export function SkeletonCard() {
 
 export function SkeletonTicker() {
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-3.5">
-      <Skeleton variant="circular" width={40} height={40} />
-      <div className="flex-1">
-        <Skeleton className="mb-1.5 h-3.5 w-14" />
-        <Skeleton className="h-5 w-24" />
-      </div>
-      <div className="flex flex-col items-end gap-1.5">
-        <Skeleton className="h-5 w-16 rounded-md" />
-        <Skeleton className="h-3 w-14" />
-      </div>
+    <div className="flex items-center gap-3 px-3 py-1.5">
+      <Skeleton className="h-3.5 w-10" />
+      <Skeleton className="h-3.5 w-20" />
+      <Skeleton className="h-3.5 w-14" />
     </div>
   );
 }

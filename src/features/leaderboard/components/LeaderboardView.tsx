@@ -1,10 +1,63 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { GlassCard, SkeletonCard, EmptyState } from '@/shared/components';
+import { GlassCard, Skeleton, EmptyState } from '@/shared/components';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { LeaderboardFilters } from './LeaderboardFilters';
 import { TraderCard } from './TraderCard';
 import { TraderDetailModal } from './TraderDetailModal';
 import type { TraderCard as TraderCardType } from '@/shared/types';
+
+const TABLE_HEADERS = [
+  { label: '#', align: 'left' as const, width: 'w-12' },
+  { label: 'Token', align: 'left' as const, width: '' },
+  { label: 'Price', align: 'right' as const, width: '' },
+  { label: '7D Chart', align: 'center' as const, width: 'w-28' },
+  { label: 'ROI', align: 'right' as const, width: '' },
+  { label: 'PNL', align: 'right' as const, width: '' },
+  { label: 'Volume', align: 'right' as const, width: '' },
+];
+
+function TableHead() {
+  return (
+    <thead>
+      <tr className="border-b border-surface-border">
+        {TABLE_HEADERS.map((h) => (
+          <th
+            key={h.label}
+            className={`px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-secondary ${h.width} text-${h.align}`}
+          >
+            {h.label}
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
+}
+
+function SkeletonRows() {
+  return (
+    <>
+      {Array.from({ length: 10 }).map((_, i) => (
+        <tr key={i} className="border-b border-surface-border/50">
+          <td className="px-4 py-3"><Skeleton className="h-4 w-5" /></td>
+          <td className="px-4 py-3">
+            <div className="flex items-center gap-2.5">
+              <Skeleton variant="circular" width={28} height={28} />
+              <div>
+                <Skeleton className="mb-1 h-3.5 w-20" />
+                <Skeleton className="h-3 w-10" />
+              </div>
+            </div>
+          </td>
+          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-16" /></div></td>
+          <td className="px-4 py-3"><div className="flex justify-center"><Skeleton className="h-4 w-20" /></div></td>
+          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
+          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
+          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
+        </tr>
+      ))}
+    </>
+  );
+}
 
 export function LeaderboardView() {
   const {
@@ -37,9 +90,7 @@ export function LeaderboardView() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          loadMore();
-        }
+        if (entries[0].isIntersecting) loadMore();
       },
       { rootMargin: '200px' },
     );
@@ -50,15 +101,6 @@ export function LeaderboardView() {
 
   return (
     <div>
-      <div className="mb-5 flex items-baseline justify-between">
-        <div className="flex items-center gap-3">
-          <h2 className="text-[17px] font-semibold text-white">Trader Leaderboard</h2>
-          <span className="rounded-md bg-white/[0.04] px-2 py-[2px] text-[11px] font-medium text-secondary">
-            {traders.length} results
-          </span>
-        </div>
-      </div>
-
       <LeaderboardFilters
         sortField={sortField}
         sortDirection={sortDirection}
@@ -69,19 +111,24 @@ export function LeaderboardView() {
       />
 
       {status === 'loading' && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <SkeletonCard key={i} />
-          ))}
-        </div>
+        <GlassCard padding="none">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <TableHead />
+              <tbody>
+                <SkeletonRows />
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
       )}
 
       {status === 'error' && (
-        <GlassCard className="text-center">
+        <GlassCard className="py-8 text-center">
           <p className="mb-3 text-sm text-bearish">{error}</p>
           <button
             onClick={reload}
-            className="rounded-lg bg-accent-green/[0.08] px-5 py-2 text-xs font-medium text-accent-green transition-all hover:bg-accent-green/[0.15]"
+            className="text-[12px] font-medium text-accent-green transition-colors hover:text-accent-green/80"
           >
             Retry
           </button>
@@ -89,23 +136,37 @@ export function LeaderboardView() {
       )}
 
       {status === 'success' && traders.length === 0 && (
-        <EmptyState
-          title="No results found"
-          description="Try adjusting your search or filters to find what you're looking for."
-          icon={
-            <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-          }
-        />
+        <GlassCard>
+          <EmptyState
+            title="No results found"
+            description="Try adjusting your search or filters."
+            icon={
+              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+            }
+          />
+        </GlassCard>
       )}
 
       {status === 'success' && traders.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {traders.map((trader) => (
-            <TraderCard key={trader.id} trader={trader} onClick={handleTraderClick} />
-          ))}
-        </div>
+        <GlassCard padding="none">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <TableHead />
+              <tbody>
+                {traders.map((trader, index) => (
+                  <TraderCard
+                    key={trader.id}
+                    trader={trader}
+                    rank={index + 1}
+                    onClick={handleTraderClick}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </GlassCard>
       )}
 
       <div ref={observerRef} className="h-4" />
