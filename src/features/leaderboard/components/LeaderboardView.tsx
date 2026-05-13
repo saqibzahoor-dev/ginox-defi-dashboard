@@ -7,7 +7,7 @@ import { TraderDetailModal } from './TraderDetailModal';
 import type { TraderCard as TraderCardType } from '@/shared/types';
 
 const TABLE_HEADERS = [
-  { label: '#', align: 'left' as const, width: 'w-12' },
+  { label: '#', align: 'left' as const, width: 'w-14' },
   { label: 'Token', align: 'left' as const, width: '' },
   { label: 'Price', align: 'right' as const, width: '' },
   { label: '7D Chart', align: 'center' as const, width: 'w-28' },
@@ -23,7 +23,7 @@ function TableHead() {
         {TABLE_HEADERS.map((h) => (
           <th
             key={h.label}
-            className={`px-4 py-3 text-[11px] font-medium uppercase tracking-wider text-secondary ${h.width} text-${h.align}`}
+            className={`px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-tertiary ${h.width} text-${h.align}`}
           >
             {h.label}
           </th>
@@ -37,22 +37,22 @@ function SkeletonRows() {
   return (
     <>
       {Array.from({ length: 10 }).map((_, i) => (
-        <tr key={i} className="border-b border-surface-border/50">
-          <td className="px-4 py-3"><Skeleton className="h-4 w-5" /></td>
-          <td className="px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              <Skeleton variant="circular" width={28} height={28} />
+        <tr key={i} className="border-b border-surface-border/60">
+          <td className="px-5 py-4"><Skeleton className="h-5 w-6" /></td>
+          <td className="px-5 py-4">
+            <div className="flex items-center gap-3">
+              <Skeleton variant="circular" width={32} height={32} />
               <div>
-                <Skeleton className="mb-1 h-3.5 w-20" />
-                <Skeleton className="h-3 w-10" />
+                <Skeleton className="mb-2 h-4 w-24" />
+                <Skeleton className="h-3 w-12" />
               </div>
             </div>
           </td>
-          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-16" /></div></td>
-          <td className="px-4 py-3"><div className="flex justify-center"><Skeleton className="h-4 w-20" /></div></td>
-          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
-          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
-          <td className="px-4 py-3"><div className="flex justify-end"><Skeleton className="h-4 w-14" /></div></td>
+          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-20" /></div></td>
+          <td className="px-5 py-4"><div className="flex justify-center"><Skeleton className="h-5 w-20" /></div></td>
+          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
+          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
+          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
         </tr>
       ))}
     </>
@@ -124,11 +124,16 @@ export function LeaderboardView() {
       )}
 
       {status === 'error' && (
-        <GlassCard className="py-8 text-center">
-          <p className="mb-3 text-sm text-bearish">{error}</p>
+        <GlassCard className="py-10 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-bearish/[0.08]">
+            <svg className="h-5 w-5 text-bearish" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+            </svg>
+          </div>
+          <p className="mb-4 text-[14px] text-bearish">{error}</p>
           <button
             onClick={reload}
-            className="text-[12px] font-medium text-accent-green transition-colors hover:text-accent-green/80"
+            className="rounded-lg bg-accent-green/[0.08] px-4 py-2 text-[13px] font-semibold text-accent-green transition-colors hover:bg-accent-green/[0.15]"
           >
             Retry
           </button>
@@ -141,7 +146,7 @@ export function LeaderboardView() {
             title="No results found"
             description="Try adjusting your search or filters."
             icon={
-              <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
             }

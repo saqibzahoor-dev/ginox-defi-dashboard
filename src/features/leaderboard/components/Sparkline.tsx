@@ -34,7 +34,7 @@ export function Sparkline({ data, width = 100, height = 32, positive = true }: S
   }, [data, width, height]);
 
   const gradientId = useMemo(() => `sparkline-${Math.random().toString(36).slice(2, 8)}`, []);
-  const color = positive ? '#0AC488' : '#FF5757';
+  const color = positive ? '#00E5A0' : '#FF4757';
 
   if (data.length < 2) return null;
 
@@ -42,7 +42,7 @@ export function Sparkline({ data, width = 100, height = 32, positive = true }: S
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="overflow-visible">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.2" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>

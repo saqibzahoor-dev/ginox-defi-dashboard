@@ -28,18 +28,18 @@ export function TraderDetailModal({ trader, isOpen, onClose }: TraderDetailModal
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={trader.name}>
-      <div className="mb-5 flex items-center gap-3">
-        <img src={trader.image} alt={trader.name} className="h-10 w-10 rounded-full" />
+      <div className="mb-6 flex items-center gap-4">
+        <img src={trader.image} alt={trader.name} className="h-12 w-12 rounded-full ring-2 ring-surface-border" />
         <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-[15px] font-semibold text-white">{trader.name}</h3>
-            <span className="text-[12px] text-secondary">{trader.symbol}</span>
+          <div className="flex items-center gap-2.5">
+            <h3 className="font-display text-[16px] font-semibold text-primary">{trader.name}</h3>
+            <span className="rounded-md bg-surface-elevated px-2 py-0.5 text-[12px] font-medium text-secondary">{trader.symbol}</span>
           </div>
-          <div className="mt-0.5 flex items-center gap-2">
-            <span className="font-mono text-[11px] text-secondary">{trader.address}</span>
+          <div className="mt-1 flex items-center gap-2.5">
+            <span className="font-mono text-[12px] text-tertiary">{trader.address}</span>
             <button
               onClick={() => copy(trader.address)}
-              className="text-[10px] font-medium text-accent-green transition-colors hover:text-accent-green/80"
+              className="text-[11px] font-semibold text-accent-green transition-colors hover:text-accent-green/80"
             >
               {copied ? 'Copied' : 'Copy'}
             </button>
@@ -47,7 +47,7 @@ export function TraderDetailModal({ trader, isOpen, onClose }: TraderDetailModal
         </div>
       </div>
 
-      <div className="mb-5 rounded-lg border border-surface-border bg-page p-3">
+      <div className="mb-6 rounded-xl border border-surface-border bg-surface-elevated p-4">
         <Sparkline
           data={trader.sparklineData}
           width={540}
@@ -56,13 +56,13 @@ export function TraderDetailModal({ trader, isOpen, onClose }: TraderDetailModal
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {stats.map(({ label, value, color }) => (
-          <div key={label} className="rounded-lg border border-surface-border bg-page px-3 py-2.5">
-            <p className="mb-0.5 text-[10px] font-medium uppercase tracking-wider text-secondary">{label}</p>
+          <div key={label} className="rounded-xl border border-surface-border bg-surface-elevated px-4 py-3.5">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-tertiary">{label}</p>
             <p
-              className={`font-mono text-[13px] font-semibold ${
-                color === null ? 'text-white' : color ? 'text-bullish' : 'text-bearish'
+              className={`font-mono text-[14px] font-semibold ${
+                color === null ? 'text-primary' : color ? 'text-bullish' : 'text-bearish'
               }`}
             >
               {value}

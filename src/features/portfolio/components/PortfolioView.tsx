@@ -18,9 +18,9 @@ export function PortfolioView() {
 
   if (!isConnected) {
     return (
-      <GlassCard className="py-8 text-center">
-        <p className="mb-1 text-sm font-medium text-white">Portfolio</p>
-        <p className="mb-4 text-[12px] text-secondary">
+      <GlassCard className="py-10 text-center">
+        <p className="mb-1.5 font-display text-[15px] font-semibold text-primary">Portfolio</p>
+        <p className="mb-6 text-[13px] leading-relaxed text-secondary">
           Connect your wallet to view holdings
         </p>
         <div className="flex justify-center">
@@ -31,26 +31,32 @@ export function PortfolioView() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <GlassCard>
-        <h2 className="mb-4 text-[14px] font-semibold text-white">Portfolio</h2>
+        <h2 className="mb-5 font-display text-[15px] font-semibold text-primary">Portfolio</h2>
 
-        <div className="mb-4 grid grid-cols-3 gap-2">
-          <div className="rounded-lg border border-surface-border bg-page px-2.5 py-2">
-            <p className="mb-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary">Total Value</p>
-            <p className="font-mono text-[14px] font-semibold text-white">
+        <div className="mb-5 grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-surface-border bg-surface-elevated px-3.5 py-3">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
+              Total Value
+            </p>
+            <p className="font-mono text-[15px] font-semibold text-primary">
               {formatCurrency(summary.totalValue)}
             </p>
           </div>
-          <div className="rounded-lg border border-surface-border bg-page px-2.5 py-2">
-            <p className="mb-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary">Total P&L</p>
-            <p className={`font-mono text-[14px] font-semibold ${summary.totalPnl >= 0 ? 'text-bullish' : 'text-bearish'}`}>
+          <div className="rounded-xl border border-surface-border bg-surface-elevated px-3.5 py-3">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
+              Total P&L
+            </p>
+            <p className={`font-mono text-[15px] font-semibold ${summary.totalPnl >= 0 ? 'text-bullish' : 'text-bearish'}`}>
               {formatCurrency(summary.totalPnl)}
             </p>
           </div>
-          <div className="rounded-lg border border-surface-border bg-page px-2.5 py-2">
-            <p className="mb-0.5 text-[9px] font-medium uppercase tracking-wider text-secondary">P&L %</p>
-            <p className={`font-mono text-[14px] font-semibold ${summary.totalPnlPercent >= 0 ? 'text-bullish' : 'text-bearish'}`}>
+          <div className="rounded-xl border border-surface-border bg-surface-elevated px-3.5 py-3">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
+              P&L %
+            </p>
+            <p className={`font-mono text-[15px] font-semibold ${summary.totalPnlPercent >= 0 ? 'text-bullish' : 'text-bearish'}`}>
               {formatPercent(summary.totalPnlPercent)}
             </p>
           </div>
@@ -60,9 +66,9 @@ export function PortfolioView() {
       </GlassCard>
 
       <GlassCard>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[14px] font-semibold text-white">Holdings</h2>
-          <span className="text-[11px] text-secondary">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="font-display text-[15px] font-semibold text-primary">Holdings</h2>
+          <span className="rounded-md bg-surface-elevated px-2 py-0.5 text-[12px] font-medium text-secondary">
             {allTokens.length} tokens
           </span>
         </div>
@@ -77,7 +83,7 @@ export function PortfolioView() {
           ))}
         </div>
 
-        <div className="mt-3">
+        <div className="mt-4">
           <AddTokenForm onAdd={addManualToken} />
         </div>
       </GlassCard>

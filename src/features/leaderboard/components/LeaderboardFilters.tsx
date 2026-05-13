@@ -38,18 +38,18 @@ export function LeaderboardFilters({
   }, [inputValue, debouncedSearch]);
 
   return (
-    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <h2 className="text-[15px] font-semibold text-white">Leaderboard</h2>
+    <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-4">
+        <h2 className="font-display text-[16px] font-semibold text-primary">Leaderboard</h2>
 
-        <div className="flex items-center gap-0.5 rounded border border-surface-border bg-page p-0.5">
+        <div className="flex items-center rounded-lg border border-surface-border bg-surface-elevated p-1">
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf}
               onClick={() => onTimeframeChange(tf)}
-              className={`rounded px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+              className={`rounded-md px-3 py-1.5 text-[12px] font-semibold transition-all ${
                 timeframe === tf
-                  ? 'bg-accent-green text-white'
+                  ? 'bg-accent-green text-page shadow-sm'
                   : 'text-secondary hover:text-primary'
               }`}
             >
@@ -58,21 +58,21 @@ export function LeaderboardFilters({
           ))}
         </div>
 
-        <div className="hidden items-center gap-0.5 sm:flex">
+        <div className="hidden items-center gap-1 sm:flex">
           {SORT_OPTIONS.map(({ field, label }) => (
             <button
               key={field}
               onClick={() => onSort(field)}
-              className={`flex items-center gap-1 rounded px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors ${
                 sortField === field
-                  ? 'text-accent-green'
-                  : 'text-secondary hover:text-primary'
+                  ? 'bg-accent-green/[0.08] text-accent-green'
+                  : 'text-secondary hover:bg-surface-hover hover:text-primary'
               }`}
             >
               {label}
               {sortField === field && (
                 <svg
-                  className={`h-2.5 w-2.5 transition-transform ${sortDirection === 'asc' ? 'rotate-180' : ''}`}
+                  className={`h-3 w-3 transition-transform ${sortDirection === 'asc' ? 'rotate-180' : ''}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -88,7 +88,7 @@ export function LeaderboardFilters({
 
       <div className="relative">
         <svg
-          className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-secondary"
+          className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-tertiary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -101,7 +101,7 @@ export function LeaderboardFilters({
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Search token..."
-          className="w-full rounded border border-surface-border bg-page py-1.5 pl-9 pr-3 text-[12px] text-primary placeholder-secondary/50 transition-colors focus:border-accent-green/30 sm:w-52"
+          className="w-full rounded-lg border border-surface-border bg-surface-elevated py-2 pl-10 pr-4 text-[13px] text-primary placeholder-tertiary transition-colors focus:border-accent-green/30 sm:w-56"
         />
       </div>
     </div>

@@ -33,9 +33,14 @@ export function WalletPanel() {
 
   if (!isConnected) {
     return (
-      <GlassCard className="py-8 text-center">
-        <p className="mb-1 text-sm font-medium text-white">Connect Wallet</p>
-        <p className="mb-5 text-[12px] text-secondary">
+      <GlassCard className="py-10 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent-green/[0.08]">
+          <svg className="h-6 w-6 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 013 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 013 6v3" />
+          </svg>
+        </div>
+        <p className="mb-1.5 font-display text-[15px] font-semibold text-primary">Connect Wallet</p>
+        <p className="mb-6 text-[13px] leading-relaxed text-secondary">
           Connect your wallet to access on-chain data
         </p>
         <div className="flex justify-center">
@@ -47,50 +52,54 @@ export function WalletPanel() {
 
   return (
     <GlassCard>
-      <div className="mb-4 flex items-start justify-between">
+      <div className="mb-5 flex items-start justify-between">
         <div>
-          <div className="mb-1 flex items-center gap-2">
+          <div className="mb-1.5 flex items-center gap-2.5">
             <button
               onClick={() => address && copy(address)}
-              className="font-mono text-[13px] font-medium text-white transition-colors hover:text-accent-green"
+              className="font-mono text-[14px] font-medium text-primary transition-colors hover:text-accent-green"
               title={address}
             >
               {formattedAddress}
             </button>
             {copied && (
-              <span className="animate-fade-in text-[10px] text-accent-green">Copied</span>
+              <span className="animate-fade-in rounded bg-accent-green/[0.08] px-2 py-0.5 text-[11px] font-medium text-accent-green">
+                Copied
+              </span>
             )}
           </div>
           {networkInfo && <NetworkBadge label={networkInfo.label} color={networkInfo.color} />}
         </div>
         <button
           onClick={() => disconnect()}
-          className="rounded border border-bearish/20 px-2.5 py-1 text-[11px] font-medium text-bearish transition-colors hover:bg-bearish/[0.06]"
+          className="rounded-lg border border-bearish/20 px-3 py-1.5 text-[12px] font-semibold text-bearish transition-colors hover:bg-bearish/[0.06]"
         >
           Disconnect
         </button>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-2.5">
-        <div className="rounded-lg border border-surface-border bg-page px-3 py-2.5">
-          <p className="mb-0.5 text-[10px] font-medium uppercase tracking-wider text-secondary">Native</p>
+      <div className="mb-5 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-surface-border bg-surface-elevated px-4 py-3.5">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-secondary">Native</p>
           {isNativeBalanceLoading ? (
-            <Skeleton className="h-4 w-16" />
+            <Skeleton className="h-5 w-20" />
           ) : (
-            <p className="font-mono text-[14px] font-semibold text-white">
-              {formattedNativeBalance} <span className="text-[10px] text-secondary">{nativeSymbol}</span>
+            <p className="font-mono text-[16px] font-semibold text-primary">
+              {formattedNativeBalance}{' '}
+              <span className="text-[11px] font-medium text-secondary">{nativeSymbol}</span>
             </p>
           )}
         </div>
-        <div className="rounded-lg border border-surface-border bg-page px-3 py-2.5">
-          <p className="mb-0.5 text-[10px] font-medium uppercase tracking-wider text-secondary">USDC</p>
-          <p className="font-mono text-[14px] font-semibold text-white">
-            {usdcBalance} <span className="text-[10px] text-secondary">USDC</span>
+        <div className="rounded-xl border border-surface-border bg-surface-elevated px-4 py-3.5">
+          <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-secondary">USDC</p>
+          <p className="font-mono text-[16px] font-semibold text-primary">
+            {usdcBalance}{' '}
+            <span className="text-[11px] font-medium text-secondary">USDC</span>
           </p>
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-5">
         <ChainSwitcher
           currentChainId={chain?.id}
           onSwitch={handleSwitchChain}
@@ -99,7 +108,7 @@ export function WalletPanel() {
         />
       </div>
 
-      <div className="border-t border-surface-border pt-4">
+      <div className="border-t border-surface-border pt-5">
         <SignMessage
           onSign={handleSignMessage}
           isSigning={isSigning}

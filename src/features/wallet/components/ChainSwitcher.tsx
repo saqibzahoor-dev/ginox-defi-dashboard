@@ -12,8 +12,10 @@ interface ChainSwitcherProps {
 export function ChainSwitcher({ currentChainId, onSwitch, isSwitching, error }: ChainSwitcherProps) {
   return (
     <div>
-      <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-secondary">Networks</p>
-      <div className="flex flex-wrap gap-1.5">
+      <p className="mb-2.5 text-[11px] font-semibold uppercase tracking-wider text-secondary">
+        Networks
+      </p>
+      <div className="flex flex-wrap gap-2">
         {supportedChains.map((chain) => {
           const meta = chainMeta[chain.id];
           const isActive = currentChainId === chain.id;
@@ -23,14 +25,14 @@ export function ChainSwitcher({ currentChainId, onSwitch, isSwitching, error }: 
               key={chain.id}
               onClick={() => onSwitch(chain.id)}
               disabled={isActive || isSwitching}
-              className={`flex items-center gap-1.5 rounded px-2.5 py-1.5 text-[12px] font-medium transition-colors ${
+              className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-[13px] font-medium transition-all ${
                 isActive
-                  ? 'border border-accent-green/20 bg-accent-green/[0.08] text-accent-green'
-                  : 'border border-surface-border bg-page text-secondary hover:text-primary'
+                  ? 'border border-accent-green/25 bg-accent-green/[0.08] text-accent-green'
+                  : 'border border-surface-border bg-surface-elevated text-secondary hover:border-border-emphasis hover:text-primary'
               } disabled:cursor-not-allowed disabled:opacity-50`}
             >
               <span
-                className="h-1.5 w-1.5 rounded-full"
+                className="h-2 w-2 rounded-full"
                 style={{ backgroundColor: meta.color }}
               />
               {meta.label}
@@ -39,7 +41,7 @@ export function ChainSwitcher({ currentChainId, onSwitch, isSwitching, error }: 
         })}
       </div>
       {error && (
-        <p className={`mt-2 text-[11px] ${error.isUserRejection ? 'text-yellow-400/80' : 'text-bearish'}`}>
+        <p className={`mt-2.5 text-[12px] ${error.isUserRejection ? 'text-warning' : 'text-bearish'}`}>
           {error.message}
         </p>
       )}

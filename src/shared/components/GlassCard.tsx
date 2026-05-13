@@ -11,9 +11,9 @@ interface GlassCardProps extends HTMLAttributes<HTMLDivElement> {
 
 const paddingMap = {
   none: '',
-  sm: 'p-3',
-  md: 'p-4',
-  lg: 'p-5',
+  sm: 'p-4',
+  md: 'p-5',
+  lg: 'p-6',
 };
 
 export function GlassCard({
@@ -27,8 +27,8 @@ export function GlassCard({
   return (
     <div
       className={classNames(
-        'rounded-lg border border-surface-border bg-surface',
-        hoverable && 'cursor-pointer transition-colors hover:bg-surface-hover',
+        'rounded-xl border border-surface-border bg-surface',
+        hoverable && 'cursor-pointer transition-all duration-200 hover:border-border-emphasis hover:bg-surface-hover',
         paddingMap[padding],
         className,
       )}

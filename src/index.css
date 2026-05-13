@@ -1,32 +1,44 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-surface: #0c1020;
-  --color-surface-hover: #111630;
-  --color-surface-border: #1a1f35;
-  --color-surface-light: rgba(255, 255, 255, 0.03);
-  --color-accent-green: #0AC488;
-  --color-accent-blue: #33A0EA;
-  --color-bullish: #0AC488;
-  --color-bearish: #FF5757;
-  --color-primary: #E0E7FF;
-  --color-secondary: #64748B;
-  --color-page: #060b18;
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
 
-  --animate-flash-green: flashGreen 0.5s ease-out;
-  --animate-flash-red: flashRed 0.5s ease-out;
-  --animate-fade-in: fadeIn 0.2s ease-out;
-  --animate-slide-up: slideUp 0.25s ease-out;
+  --color-page: #07080D;
+  --color-surface: #0E1018;
+  --color-surface-elevated: #151722;
+  --color-surface-hover: #1A1D2A;
+  --color-surface-border: #1E2236;
+  --color-border-emphasis: #2A2E44;
+
+  --color-accent-green: #00E5A0;
+  --color-accent-blue: #3B82F6;
+  --color-accent-purple: #8B5CF6;
+
+  --color-bullish: #00E5A0;
+  --color-bearish: #FF4757;
+  --color-warning: #FFB74D;
+
+  --color-primary: #ECEEF4;
+  --color-secondary: #7C819A;
+  --color-tertiary: #4A4E65;
+
+  --animate-flash-green: flashGreen 0.6s ease-out;
+  --animate-flash-red: flashRed 0.6s ease-out;
+  --animate-fade-in: fadeIn 0.25s ease-out;
+  --animate-slide-up: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-pulse-subtle: pulseSubtle 2s ease-in-out infinite;
   --animate-skeleton: skeleton 1.8s ease-in-out infinite;
+  --animate-glow-pulse: glowPulse 3s ease-in-out infinite;
 
   @keyframes flashGreen {
-    0% { background-color: rgba(10, 196, 136, 0.1); }
+    0% { background-color: rgba(0, 229, 160, 0.12); }
     100% { background-color: transparent; }
   }
 
   @keyframes flashRed {
-    0% { background-color: rgba(255, 87, 87, 0.1); }
+    0% { background-color: rgba(255, 71, 87, 0.12); }
     100% { background-color: transparent; }
   }
 
@@ -36,18 +48,23 @@
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   @keyframes pulseSubtle {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.4; }
   }
 
   @keyframes skeleton {
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 229, 160, 0); }
+    50% { box-shadow: 0 0 16px 2px rgba(0, 229, 160, 0.08); }
   }
 }
 
@@ -64,11 +81,14 @@ html {
 body {
   background-color: var(--color-page);
   color: var(--color-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  letter-spacing: -0.011em;
+  line-height: 1.5;
+  font-size: 14px;
 }
 
 #root {
@@ -76,8 +96,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -85,25 +105,36 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 4px;
+  background: var(--color-surface-border);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-border-emphasis);
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: none;
 }
 
 button:focus-visible {
-  outline: 1px solid var(--color-accent-green);
+  outline: 2px solid var(--color-accent-green);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 ::selection {
-  background: rgba(10, 196, 136, 0.2);
+  background: rgba(0, 229, 160, 0.2);
   color: white;
+}
+
+@layer utilities {
+  .text-gradient-green {
+    background: linear-gradient(135deg, #00E5A0, #00C9DB);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }

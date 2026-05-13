@@ -10,14 +10,14 @@ interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-10 text-center">
-      {icon && <div className="mb-3 text-secondary/50">{icon}</div>}
-      <h3 className="mb-1 text-sm font-medium text-white">{title}</h3>
-      <p className="mb-4 max-w-[260px] text-[12px] text-secondary">{description}</p>
+    <div className="flex flex-col items-center justify-center py-14 text-center">
+      {icon && <div className="mb-4 text-tertiary">{icon}</div>}
+      <h3 className="mb-1.5 font-display text-[15px] font-semibold text-primary">{title}</h3>
+      <p className="mb-5 max-w-[280px] text-[13px] leading-relaxed text-secondary">{description}</p>
       {action && (
         <button
           onClick={action.onClick}
-          className="rounded bg-accent-green px-4 py-2 text-[12px] font-medium text-white transition-colors hover:bg-accent-green/90"
+          className="rounded-lg bg-accent-green px-5 py-2.5 text-[13px] font-semibold text-page transition-all hover:brightness-110"
         >
           {action.label}
         </button>
