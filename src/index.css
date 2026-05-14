@@ -721,9 +721,74 @@ body::after {
   margin-top: 8px;
 }
 
-/* ------ Wallet list rows ------ */
-.cw-wallet-list {
+/* ------ Wallet grid (desktop, >600px) ------
+   3-column card layout matching the app.ginox.io reference. Each card is a
+   rounded square with the wallet icon centred above an uppercase label. */
+.cw-wallet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.cw-wallet-card {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 22px 10px 18px;
+  min-height: 124px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 180ms, border-color 180ms, transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cw-wallet-card:hover:not(:disabled) {
+  background: rgba(10,196,136,0.05);
+  border-color: rgba(10,196,136,0.28);
+  transform: translateY(-2px);
+}
+.cw-wallet-card:active:not(:disabled) { transform: scale(0.98); }
+.cw-wallet-card:disabled { cursor: wait; }
+.cw-wallet-card.is-pending {
+  background: rgba(10,196,136,0.08);
+  border-color: rgba(10,196,136,0.32);
+}
+.cw-wallet-card.is-dimmed { opacity: 0.4; }
+.cw-wallet-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.cw-wallet-card-icon svg {
+  width: 44px;
+  height: 44px;
+}
+.cw-wallet-card-name {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.3;
+}
+.cw-wallet-card.is-pending .cw-wallet-card-name {
+  color: var(--color-bullish);
+}
+
+/* ------ Wallet list rows (mobile, ≤600px) ------ */
+.cw-wallet-list {
+  display: none; /* hidden on desktop, shown on mobile via media query */
   flex-direction: column;
   gap: 4px;
 }
@@ -855,6 +920,10 @@ body::after {
    slides up, like a native iOS / Android sheet.
    ================================================================== */
 @media (max-width: 600px) {
+  /* Swap layout: hide the desktop card grid, show the list rows */
+  .cw-wallet-grid { display: none !important; }
+  .cw-wallet-list { display: flex !important; }
+
   .cw-backdrop {
     align-items: flex-end;
     padding: 0;

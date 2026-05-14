@@ -136,9 +136,13 @@ export function ConnectWalletModal({ isOpen, onClose }: ConnectWalletModalProps)
 
         <div className="cw-body">
           <div className="cw-section-label">Popular</div>
+          {/* Desktop: 3-column card grid. Mobile (≤600px): hidden via CSS. */}
+          <WalletGrid wallets={grouped.popular} onConnect={handleConnect} pendingMatcher={pendingMatcher} isPending={isPending} />
+          {/* Mobile: vertical list rows. Desktop (>600px): hidden via CSS. */}
           <WalletList wallets={grouped.popular} onConnect={handleConnect} pendingMatcher={pendingMatcher} isPending={isPending} />
 
           <div className="cw-section-label cw-section-label--spaced">More wallets</div>
+          <WalletGrid wallets={grouped.more} onConnect={handleConnect} pendingMatcher={pendingMatcher} isPending={isPending} />
           <WalletList wallets={grouped.more} onConnect={handleConnect} pendingMatcher={pendingMatcher} isPending={isPending} />
         </div>
 
@@ -191,6 +195,37 @@ function WalletList({ wallets, onConnect, pendingMatcher, isPending }: WalletLis
                 <path d="m6 4 4 4-4 4" />
               </svg>
             )}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * 3-column card grid for desktop — mirrors the layout from the app.ginox.io
+ * reference. Each card has a centred icon and an uppercase label below. CSS
+ * hides this on viewports ≤600px in favour of the WalletList rows.
+ */
+function WalletGrid({ wallets, onConnect, pendingMatcher, isPending }: WalletListProps) {
+  return (
+    <div className="cw-wallet-grid">
+      {wallets.map((w) => {
+        const isThisPending = pendingMatcher === w.matchers[0];
+        const isOtherPending = isPending && !isThisPending;
+        const Icon = w.icon;
+        return (
+          <button
+            key={w.label}
+            type="button"
+            onClick={() => onConnect(w)}
+            disabled={isPending}
+            className={`cw-wallet-card ${isThisPending ? 'is-pending' : ''} ${isOtherPending ? 'is-dimmed' : ''}`}
+          >
+            <div className="cw-wallet-card-icon">
+              {isThisPending ? <div className="cw-wallet-spinner" aria-hidden="true" /> : <Icon size={42} />}
+            </div>
+            <div className="cw-wallet-card-name">{w.label}</div>
           </button>
         );
       })}
