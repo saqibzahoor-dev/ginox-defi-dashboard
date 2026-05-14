@@ -23,7 +23,10 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error(`[${this.props.moduleName || 'Module'}]`, error, info);
+    if (import.meta.env.DEV) {
+      console.error(`[${this.props.moduleName || 'Module'}]`, error, info);
+    }
+    // Production: send to monitoring service (Sentry, DataDog, etc.)
   }
 
   handleRetry = () => {
@@ -35,22 +38,28 @@ export class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="rounded-xl border border-bearish/10 bg-surface p-6 text-center">
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-bearish/[0.08]">
-            <svg className="h-5 w-5 text-bearish" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        <div className="glass" style={{ padding: 24, textAlign: 'center' }}>
+          <div style={{
+            width: 44, height: 44, margin: '0 auto 12px',
+            borderRadius: 999,
+            background: 'rgba(255,87,87,0.10)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--color-bearish)',
+          }}>
+            <svg width={20} height={20} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round">
+              <path d="m4 4 8 8M12 4l-8 8" />
             </svg>
           </div>
-          <p className="mb-1 font-display text-[14px] font-semibold text-primary">
+          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
             {this.props.moduleName || 'Module'} Error
           </p>
-          <p className="mb-4 text-[13px] text-secondary">
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 16 }}>
             {this.state.error?.message || 'Something went wrong'}
           </p>
-          <button
-            onClick={this.handleRetry}
-            className="rounded-lg bg-accent-green/[0.1] px-5 py-2 text-[13px] font-semibold text-accent-green transition-colors hover:bg-accent-green/[0.18]"
-          >
+          <button className="btn btn-sm" onClick={this.handleRetry}>
+            <svg width={13} height={13} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 8a5 5 0 1 1-1.5-3.5M13 3v2.5h-2.5" />
+            </svg>
             Retry
           </button>
         </div>

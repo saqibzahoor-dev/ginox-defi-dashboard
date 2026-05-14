@@ -17,7 +17,7 @@ export function usePortfolio() {
   const { manualTokens, detectedTokens, setDetectedTokens, addManualToken, removeManualToken, updateTokenPrice } = usePortfolioStore();
   const tickers = useTickerStore((s) => s.tickers);
 
-  const { data: nativeBalance } = useBalance({
+  const { data: nativeBalance, isLoading: isBalanceLoading, isError: isBalanceError, error: balanceError } = useBalance({
     address,
     query: { enabled: isConnected },
   });
@@ -104,6 +104,9 @@ export function usePortfolio() {
 
   return {
     isConnected,
+    isLoading: isBalanceLoading,
+    isError: isBalanceError,
+    error: balanceError,
     allTokens,
     summary,
     allocations,

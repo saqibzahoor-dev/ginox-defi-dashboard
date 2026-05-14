@@ -7,7 +7,7 @@ On-chain portfolio tracking with P&L calculation, allocation charts, and manual 
 - **PortfolioView** -- Main portfolio display with summary cards and token list.
 - **AllocationChart** -- Donut chart showing portfolio allocation percentages.
 - **TokenRow** -- Individual token display with P&L breakdown.
-- **AddTokenForm** -- Form for manually adding tokens not auto-detected.
+- **AddTokenModal** -- Modal for manually adding tokens not auto-detected. Portals to `document.body` to escape glass-card stacking contexts.
 
 ## Hooks
 

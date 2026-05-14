@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { TIMEFRAMES, SEARCH_DEBOUNCE_MS } from '@/config/constants';
 import { debounce } from '@/shared/utils/debounce';
+import { useLeaderboardStore } from '@/stores/leaderboardStore';
 import type { SortField, SortDirection, Timeframe } from '@/shared/types';
 
 interface LeaderboardFiltersProps {
@@ -13,8 +14,8 @@ interface LeaderboardFiltersProps {
 }
 
 const SORT_OPTIONS: { field: SortField; label: string }[] = [
-  { field: 'roi', label: 'ROI' },
-  { field: 'pnl', label: 'PNL' },
+  { field: 'roi', label: 'ROI %' },
+  { field: 'pnl', label: 'PNL $' },
   { field: 'volume', label: 'Volume' },
 ];
 
@@ -37,72 +38,102 @@ export function LeaderboardFilters({
     debouncedSearch(inputValue);
   }, [inputValue, debouncedSearch]);
 
-  return (
-    <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-4">
-        <h2 className="font-display text-[16px] font-semibold text-primary">Leaderboard</h2>
+  // Sync with external search changes (from header search bar)
+  const storeQuery = useLeaderboardStore((s) => s.searchQuery);
+  useEffect(() => {
+    if (storeQuery !== inputValue) {
+      setInputValue(storeQuery);
+    }
+    // Intentionally omit inputValue from deps — only sync when the store
+    // value changes externally (e.g. header search). Including inputValue
+    // would cause an infinite sync loop between local state and store.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeQuery]);
 
-        <div className="flex items-center rounded-lg border border-surface-border bg-surface-elevated p-1">
+  return (
+    <div className="glass" style={{ padding: 14, marginBottom: 18, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div className="input" style={{ flex: '1 1 240px', display: 'flex', alignItems: 'center', gap: 8, height: 34 }}>
+        <svg width={14} height={14} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="7" cy="7" r="4.5" />
+          <path d="m13 13-2.6-2.6" />
+        </svg>
+        <input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Search by name or address..."
+          style={{ background: 'transparent', border: 'none', color: 'inherit', flex: 1, fontSize: 13, outline: 'none', fontFamily: 'inherit' }}
+        />
+        {inputValue && (
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => setInputValue('')}
+            style={{ width: 20, height: 20, padding: 0, justifyContent: 'center' }}
+          >
+            <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="m4 4 8 8M12 4l-8 8" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="eyebrow">Timeframe</span>
+        <div style={{ display: 'inline-flex', padding: 3, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)', borderRadius: 8 }}>
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf}
               onClick={() => onTimeframeChange(tf)}
-              className={`rounded-md px-3 py-1.5 text-[12px] font-semibold transition-all ${
-                timeframe === tf
-                  ? 'bg-accent-green text-page shadow-sm'
-                  : 'text-secondary hover:text-primary'
-              }`}
+              style={{
+                padding: '6px 12px',
+                fontSize: 11,
+                fontFamily: 'var(--font-mono)',
+                fontWeight: 500,
+                color: timeframe === tf ? '#021018' : 'var(--color-text-muted)',
+                background: timeframe === tf ? 'var(--gradient-accent)' : 'transparent',
+                border: 'none',
+                borderRadius: 5,
+                cursor: 'pointer',
+                transition: 'all 160ms',
+              }}
             >
               {tf}
             </button>
           ))}
         </div>
-
-        <div className="hidden items-center gap-1 sm:flex">
-          {SORT_OPTIONS.map(({ field, label }) => (
-            <button
-              key={field}
-              onClick={() => onSort(field)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors ${
-                sortField === field
-                  ? 'bg-accent-green/[0.08] text-accent-green'
-                  : 'text-secondary hover:bg-surface-hover hover:text-primary'
-              }`}
-            >
-              {label}
-              {sortField === field && (
-                <svg
-                  className={`h-3 w-3 transition-transform ${sortDirection === 'asc' ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <div className="relative">
-        <svg
-          className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-tertiary"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Search token..."
-          className="w-full rounded-lg border border-surface-border bg-surface-elevated py-2 pl-10 pr-4 text-[13px] text-primary placeholder-tertiary transition-colors focus:border-accent-green/30 sm:w-56"
-        />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span className="eyebrow">Sort</span>
+        <div style={{ display: 'inline-flex', padding: 3, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--color-border)', borderRadius: 8, gap: 2 }}>
+          {SORT_OPTIONS.map(({ field, label }) => {
+            const active = sortField === field;
+            return (
+              <button
+                key={field}
+                onClick={() => onSort(field)}
+                style={{
+                  padding: '6px 10px',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: active ? 'var(--color-text)' : 'var(--color-text-muted)',
+                  background: active ? 'rgba(255,255,255,0.06)' : 'transparent',
+                  border: 'none',
+                  borderRadius: 5,
+                  cursor: 'pointer',
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                }}
+              >
+                {label}
+                {active && (
+                  <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
+                    style={{ transform: sortDirection === 'asc' ? 'rotate(180deg)' : 'none' }}>
+                    <path d="m4 6 4 4 4-4" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

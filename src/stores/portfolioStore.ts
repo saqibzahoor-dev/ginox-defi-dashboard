@@ -50,6 +50,11 @@ export const usePortfolioStore = create<PortfolioState>()(
     }),
     {
       name: 'ginox-portfolio',
+      // Persistence config:
+      // - Uses localStorage (zustand/middleware default) to survive page refresh
+      // - Only manualTokens are persisted via partialize — detectedTokens are
+      //   re-fetched from the chain on each wallet reconnect
+      // - Key: "ginox-portfolio" in localStorage
       partialize: (state) => ({ manualTokens: state.manualTokens }),
     },
   ),

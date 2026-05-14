@@ -13,6 +13,7 @@ export interface TickerData {
   high24h: number;
   low24h: number;
   prevPrice: number;
+  sparklineData?: number[];
 }
 
 export type PriceDirection = 'up' | 'down' | 'neutral';
@@ -25,13 +26,21 @@ export interface TraderCard {
   symbol: string;
   image: string;
   address: string;
+  /** Default ROI value (matches 7d). Kept for backward compatibility — display
+   *  components should prefer `getRoiForTimeframe()` to react to the active timeframe. */
   roi: number;
+  /** Default PnL value (matches 7d). Use `getPnlForTimeframe()` for timeframe-aware display. */
   pnl: number;
   winRate: number;
   maxDrawdown: number;
   volume: number;
   sparklineData: number[];
+  /** Raw price-change percentages from CoinGecko. Source for per-timeframe ROI / PnL. */
+  priceChange1d: number;
   priceChange7d: number;
+  priceChange30d: number;
+  /** Deterministic multiplier to simulate trader leverage on top of the raw price change. */
+  roiMultiplier: number;
   currentPrice: number;
   marketCap: number;
 }

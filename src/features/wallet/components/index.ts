@@ -1,4 +1,5 @@
 export { WalletPanel } from './WalletPanel';
 export { NetworkBadge } from './NetworkBadge';
-export { ChainSwitcher } from './ChainSwitcher';
-export { SignMessage } from './SignMessage';
+export { SignMessageModal } from './SignMessageModal';
+export { WrongNetworkBanner } from './WrongNetworkBanner';
+export { ConnectWalletModal } from './ConnectWalletModal';

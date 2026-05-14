@@ -15,8 +15,6 @@
     "lightweight-charts": "^5.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-hot-toast": "^2.6.0",
-    "recharts": "^3.8.1",
     "viem": "^2.48.11",
     "wagmi": "^2.19.5",
     "zustand": "^5.0.13"

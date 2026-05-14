@@ -1,44 +1,39 @@
-import { classNames } from '@/shared/utils/format';
-
 interface SkeletonProps {
   className?: string;
   variant?: 'text' | 'circular' | 'rectangular';
   width?: string | number;
   height?: string | number;
+  style?: React.CSSProperties;
 }
 
-export function Skeleton({ className, variant = 'rectangular', width, height }: SkeletonProps) {
-  const baseClasses =
-    'bg-gradient-to-r from-surface-elevated via-border-emphasis/30 to-surface-elevated bg-[length:200%_100%] animate-skeleton';
-
-  const variantClasses = {
-    text: 'rounded-md',
-    circular: 'rounded-full',
-    rectangular: 'rounded-md',
-  };
-
+export function Skeleton({ width = '100%', height = 12, variant = 'rectangular', style }: SkeletonProps) {
   return (
     <div
-      className={classNames(baseClasses, variantClasses[variant], className)}
-      style={{ width, height }}
+      className="skel"
+      style={{
+        width,
+        height,
+        borderRadius: variant === 'circular' ? 999 : 4,
+        ...style,
+      }}
     />
   );
 }
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-xl border border-surface-border bg-surface p-5">
-      <div className="mb-4 flex items-center gap-3">
-        <Skeleton variant="circular" width={32} height={32} />
-        <div className="flex-1">
-          <Skeleton className="mb-2 h-4 w-24" />
-          <Skeleton className="h-3 w-14" />
+    <div className="glass" style={{ padding: 18 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <Skeleton variant="circular" width={36} height={36} />
+        <div style={{ flex: 1 }}>
+          <Skeleton width={80} height={14} />
+          <Skeleton width={50} height={10} />
         </div>
       </div>
-      <Skeleton className="mb-4 h-6 w-full" />
-      <div className="grid grid-cols-2 gap-3">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
+      <Skeleton height={20} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 12 }}>
+        <Skeleton height={32} />
+        <Skeleton height={32} />
       </div>
     </div>
   );
@@ -46,10 +41,13 @@ export function SkeletonCard() {
 
 export function SkeletonTicker() {
   return (
-    <div className="flex items-center gap-4 rounded-lg bg-surface-elevated/50 px-4 py-2.5">
-      <Skeleton className="h-4 w-12" />
-      <Skeleton className="h-4 w-24" />
-      <Skeleton className="h-4 w-16" />
+    <div className="glass" style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16 }}>
+      <Skeleton variant="circular" width={40} height={40} />
+      <div style={{ flex: 1 }}>
+        <Skeleton width={60} height={12} />
+        <Skeleton width={100} height={18} />
+      </div>
+      <Skeleton width={70} height={36} />
     </div>
   );
 }

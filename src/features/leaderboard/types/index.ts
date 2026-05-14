@@ -7,6 +7,7 @@ export interface CoinGeckoMarket {
   market_cap: number;
   total_volume: number;
   price_change_percentage_24h: number;
+  price_change_percentage_24h_in_currency: number | null;
   price_change_percentage_7d_in_currency: number | null;
   price_change_percentage_30d_in_currency: number | null;
   sparkline_in_7d: { price: number[] } | null;

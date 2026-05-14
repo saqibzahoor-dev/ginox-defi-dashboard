@@ -1,85 +1,106 @@
-import { formatCurrency, formatPercent, formatVolume } from '@/shared/utils/format';
+import { formatCurrency, formatPercent, truncateAddress } from '@/shared/utils/format';
+import { TokenIcon } from '@/shared/components';
 import { Sparkline } from './Sparkline';
-import type { TraderCard as TraderCardType } from '@/shared/types';
+import { getRoiForTimeframe, getPnlForTimeframe } from '../utils/transform';
+import type { TraderCard as TraderCardType, Timeframe } from '@/shared/types';
 
 interface TraderCardProps {
   trader: TraderCardType;
   rank: number;
+  timeframe: Timeframe;
   onClick: (trader: TraderCardType) => void;
 }
 
-export function TraderCard({ trader, rank, onClick }: TraderCardProps) {
+const TIMEFRAME_LABELS: Record<Timeframe, string> = {
+  '1D': '24h',
+  '7D': '7d',
+  '30D': '30d',
+};
+
+function StatCell({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <tr
+    <div>
+      <div style={{ fontSize: 10, color: 'var(--color-text-dim)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 3 }}>{label}</div>
+      <div className="num" style={{ fontSize: 13, fontWeight: 500, color: accent || 'var(--color-text)' }}>{value}</div>
+    </div>
+  );
+}
+
+export function TraderCard({ trader, rank, timeframe, onClick }: TraderCardProps) {
+  const roi = getRoiForTimeframe(trader, timeframe);
+  const pnl = getPnlForTimeframe(trader, timeframe);
+  const pos = roi >= 0;
+  const color = pos ? 'var(--color-bullish)' : 'var(--color-bearish)';
+  const rankMedal = rank <= 3;
+
+  return (
+    <button
+      className="glass lift"
       onClick={() => onClick(trader)}
-      className={`cursor-pointer border-b border-surface-border/60 transition-colors hover:bg-surface-hover ${
-        rank <= 3 ? 'bg-accent-green/[0.02]' : ''
-      }`}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick(trader);
-        }
+      style={{
+        padding: 16, textAlign: 'left', cursor: 'pointer',
+        background: 'var(--color-card)', border: '1px solid var(--color-border)',
+        borderRadius: 'var(--radius-lg)',
+        display: 'flex', flexDirection: 'column', gap: 14,
+        position: 'relative', overflow: 'hidden',
+        width: '100%',
       }}
     >
-      <td className="px-5 py-4 text-[14px]">
-        {rank <= 3 ? (
-          <span
-            className={`inline-flex h-7 w-7 items-center justify-center rounded-lg text-[12px] font-bold ${
-              rank === 1
-                ? 'bg-yellow-500/12 text-yellow-400'
-                : rank === 2
-                  ? 'bg-gray-400/12 text-gray-300'
-                  : 'bg-amber-700/12 text-amber-500'
-            }`}
-          >
-            {rank}
-          </span>
-        ) : (
-          <span className="text-secondary">{rank}</span>
-        )}
-      </td>
-      <td className="px-5 py-4">
-        <div className="flex items-center gap-3">
+      <div style={{
+        position: 'absolute', top: 12, right: 12,
+        display: 'flex', alignItems: 'center', gap: 4,
+        fontSize: 10, fontFamily: 'var(--font-mono)',
+        color: rankMedal ? '#021018' : 'var(--color-text-muted)',
+        background: rankMedal ? 'var(--gradient-accent)' : 'rgba(255,255,255,0.04)',
+        padding: '3px 7px',
+        borderRadius: 999,
+        fontWeight: 600,
+        border: rankMedal ? 'none' : '1px solid var(--color-border)',
+      }}>
+        #{String(rank).padStart(2, '0')}
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {trader.image ? (
           <img
             src={trader.image}
             alt={trader.name}
-            className="h-8 w-8 rounded-full ring-1 ring-surface-border"
+            style={{ width: 36, height: 36, borderRadius: 999, flexShrink: 0, background: 'rgba(255,255,255,0.06)' }}
             loading="lazy"
           />
-          <div className="min-w-0">
-            <p className="truncate text-[14px] font-medium text-primary">{trader.name}</p>
-            <p className="text-[12px] text-secondary">{trader.symbol}</p>
+        ) : (
+          <TokenIcon symbol={trader.symbol} size={36} />
+        )}
+        <div style={{ minWidth: 0, flex: 1, paddingRight: 40 }}>
+          <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{trader.name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+            <span className="num" style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>{truncateAddress(trader.address)}</span>
+            <span style={{ fontSize: 10, color: 'var(--color-text-dim)' }}>&middot;</span>
+            <span style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>{trader.symbol}</span>
           </div>
         </div>
-      </td>
-      <td className="px-5 py-4 text-right font-mono text-[14px] font-medium text-primary">
-        ${trader.currentPrice.toLocaleString(undefined, { maximumFractionDigits: 2 })}
-      </td>
-      <td className="px-5 py-4">
-        <div className="mx-auto w-20">
-          <Sparkline data={trader.sparklineData} width={80} height={28} positive={trader.roi >= 0} />
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 }}>
+        <div>
+          <div style={{ fontSize: 10, color: 'var(--color-text-dim)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 2 }}>ROI &middot; {TIMEFRAME_LABELS[timeframe]}</div>
+          <div className="num" style={{ fontSize: 24, fontWeight: 600, letterSpacing: '-0.025em', color }}>
+            {pos ? '+' : ''}{roi.toFixed(1)}%
+          </div>
         </div>
-      </td>
-      <td
-        className={`px-5 py-4 text-right font-mono text-[14px] font-semibold ${
-          trader.roi >= 0 ? 'text-bullish' : 'text-bearish'
-        }`}
-      >
-        {formatPercent(trader.roi)}
-      </td>
-      <td
-        className={`px-5 py-4 text-right font-mono text-[14px] font-semibold ${
-          trader.pnl >= 0 ? 'text-bullish' : 'text-bearish'
-        }`}
-      >
-        {formatCurrency(trader.pnl)}
-      </td>
-      <td className="px-5 py-4 text-right font-mono text-[14px] text-primary">
-        {formatVolume(trader.volume)}
-      </td>
-    </tr>
+        <div style={{ width: 100, height: 40, flexShrink: 0 }}>
+          <Sparkline data={trader.sparklineData} width={100} height={40} positive={pos} />
+        </div>
+      </div>
+
+      <div className="div-h" />
+
+      <div className="trader-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+        <StatCell label="PNL" value={formatCurrency(pnl)} accent={pnl >= 0 ? 'var(--color-bullish)' : 'var(--color-bearish)'} />
+        <StatCell label="Win Rate" value={`${trader.winRate}%`} />
+        <StatCell label="Max DD" value={formatPercent(trader.maxDrawdown)} accent="var(--color-bearish)" />
+        <StatCell label="Volume" value={formatCurrency(trader.volume)} />
+      </div>
+    </button>
   );
 }

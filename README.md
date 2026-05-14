@@ -6,13 +6,13 @@ A production-grade DeFi trading dashboard built with React 18, TypeScript, and w
 
 | Layer            | Technology                                |
 |------------------|-------------------------------------------|
-| Framework        | React 18 + TypeScript (strict mode)       |
-| Build Tool       | Vite 5                                    |
-| Styling          | Tailwind CSS (custom only, no UI libs)    |
-| Web3             | wagmi v2 + viem + RainbowKit              |
+| Framework        | React 19 + TypeScript (strict mode)       |
+| Build Tool       | Vite 8                                    |
+| Styling          | Tailwind CSS v4 (custom only, no UI libs) |
+| Web3             | wagmi v2 + viem + RainbowKit v2 (connectors only) |
 | State Management | Zustand                                   |
-| Charts           | Recharts + Custom SVG Sparklines          |
-| Linting          | ESLint + Prettier                         |
+| Charts           | Custom SVG Donut + Sparkline Charts       |
+| Linting          | ESLint + Prettier (eslint-config-prettier)|
 | Deployment       | Vercel                                    |
 
 ## Architecture
@@ -127,22 +127,24 @@ npm run preview
 ## Modules
 
 ### Module 1: Wallet Connect & On-Chain Data
-- Multi-wallet support via RainbowKit (MetaMask, WalletConnect, Coinbase)
-- Connection persists across page refresh
-- Displays truncated address, native balance (ETH/BNB), and USDC balance
-- Network badge with chain detection
+- Multi-wallet support via RainbowKit connectors (MetaMask, WalletConnect, Coinbase, Rainbow, Trust, Phantom, Ledger, Safe)
+- Custom **ConnectWalletModal** replaces RainbowKit's default UI -- centred card on desktop, native bottom-sheet on mobile (matches the patterns shipped by Coinbase Onchain Kit, Reown AppKit, and RainbowKit v2). Modals portal to `document.body` to escape stacking-context traps caused by the header's `backdrop-filter` and glass cards' `transform`.
+- Connection persists across page refresh via explicit localStorage persistence
+- Displays truncated address, native balance (ETH/BNB/MATIC/AVAX), and USDC balance
+- Network badge with chain detection (8 supported chains)
 - Chain switching with graceful rejection handling
 - EIP-712 typed message signing with signature display
+- Block explorer link per chain (Etherscan, Polygonscan, Arbiscan, etc.)
 - No real transactions -- signing only
 
 ### Module 2: Live Trader Leaderboard
 - Data sourced from CoinGecko public API (no key required)
 - Responsive card grid with custom SVG sparkline charts
-- Sort by ROI%, PNL, Volume (ascending/descending toggle)
-- Timeframe filter: 7D / 30D / 90D / ALL
+- Sort by ROI%, PNL, Volume (ascending/descending toggle) -- sort respects the active timeframe
+- Timeframe filter: 1D / 7D / 30D, with per-timeframe ROI and PnL derived from CoinGecko `price_change_percentage_24h_in_currency` / `_7d_in_currency` / `_30d_in_currency`
 - Debounced search (300ms) by name or address
 - Detail modal with expanded stats and chart
-- Infinite scroll via IntersectionObserver
+- Client-side pagination (10 per page, 150 traders bulk-loaded)
 - Skeleton loaders, error states, empty states
 
 ### Module 3: Real-Time Price Ticker
@@ -156,7 +158,7 @@ npm run preview
 ### Module 4: On-Chain Portfolio Tracker
 - Auto-loads native token balance from connected wallet
 - P&L per token (mock entry price vs live price from Module 3)
-- Donut chart for portfolio allocation (Recharts)
+- Custom SVG donut chart for portfolio allocation
 - Total portfolio value and overall P&L (absolute + percentage)
 - Manual token addition for tokens not auto-detected
 - Persists manual additions to localStorage

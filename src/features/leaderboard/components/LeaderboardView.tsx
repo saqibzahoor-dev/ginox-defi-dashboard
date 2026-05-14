@@ -1,61 +1,43 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { GlassCard, Skeleton, EmptyState } from '@/shared/components';
+import { useState, useEffect, useCallback } from 'react';
+import { Skeleton } from '@/shared/components';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { LeaderboardFilters } from './LeaderboardFilters';
 import { TraderCard } from './TraderCard';
 import { TraderDetailModal } from './TraderDetailModal';
+import { Pagination } from './Pagination';
 import type { TraderCard as TraderCardType } from '@/shared/types';
 
-const TABLE_HEADERS = [
-  { label: '#', align: 'left' as const, width: 'w-14' },
-  { label: 'Token', align: 'left' as const, width: '' },
-  { label: 'Price', align: 'right' as const, width: '' },
-  { label: '7D Chart', align: 'center' as const, width: 'w-28' },
-  { label: 'ROI', align: 'right' as const, width: '' },
-  { label: 'PNL', align: 'right' as const, width: '' },
-  { label: 'Volume', align: 'right' as const, width: '' },
-];
+const ITEMS_PER_PAGE = 10;
 
-function TableHead() {
+function TraderCardSkeleton() {
   return (
-    <thead>
-      <tr className="border-b border-surface-border">
-        {TABLE_HEADERS.map((h) => (
-          <th
-            key={h.label}
-            className={`px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-tertiary ${h.width} text-${h.align}`}
-          >
-            {h.label}
-          </th>
-        ))}
-      </tr>
-    </thead>
-  );
-}
-
-function SkeletonRows() {
-  return (
-    <>
-      {Array.from({ length: 10 }).map((_, i) => (
-        <tr key={i} className="border-b border-surface-border/60">
-          <td className="px-5 py-4"><Skeleton className="h-5 w-6" /></td>
-          <td className="px-5 py-4">
-            <div className="flex items-center gap-3">
-              <Skeleton variant="circular" width={32} height={32} />
-              <div>
-                <Skeleton className="mb-2 h-4 w-24" />
-                <Skeleton className="h-3 w-12" />
-              </div>
+    <div className="glass" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Skeleton variant="circular" width={36} height={36} />
+        <div style={{ flex: 1 }}>
+          <Skeleton width="60%" height={12} />
+          <div style={{ marginTop: 6 }}>
+            <Skeleton width="40%" height={9} />
+          </div>
+        </div>
+        <Skeleton width={42} height={18} />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <Skeleton width={90} height={26} />
+        <Skeleton width={100} height={36} />
+      </div>
+      <div className="div-h" />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i}>
+            <Skeleton width="60%" height={8} />
+            <div style={{ marginTop: 6 }}>
+              <Skeleton width="80%" height={12} />
             </div>
-          </td>
-          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-20" /></div></td>
-          <td className="px-5 py-4"><div className="flex justify-center"><Skeleton className="h-5 w-20" /></div></td>
-          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
-          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
-          <td className="px-5 py-4"><div className="flex justify-end"><Skeleton className="h-5 w-16" /></div></td>
-        </tr>
-      ))}
-    </>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -67,40 +49,72 @@ export function LeaderboardView() {
     sortField,
     sortDirection,
     timeframe,
-    hasMore,
     handleSort,
     setTimeframe,
     setSearchQuery,
-    loadMore,
     reload,
   } = useLeaderboard();
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedTrader, setSelectedTrader] = useState<TraderCardType | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const observerRef = useRef<HTMLDivElement>(null);
+
+  const totalPages = Math.ceil(traders.length / ITEMS_PER_PAGE);
+  const paginatedTraders = traders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  // Reset to page 1 when filters/sort/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortField, sortDirection, timeframe]);
+
+  // Also reset when traders list changes (search filter)
+  useEffect(() => {
+    if (currentPage > Math.ceil(traders.length / ITEMS_PER_PAGE)) {
+      setCurrentPage(1);
+    }
+  }, [traders.length, currentPage]);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+    document.getElementById('section-leaderboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, []);
 
   const handleTraderClick = useCallback((trader: TraderCardType) => {
     setSelectedTrader(trader);
     setIsModalOpen(true);
   }, []);
 
-  useEffect(() => {
-    const el = observerRef.current;
-    if (!el || !hasMore || status !== 'success') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) loadMore();
-      },
-      { rootMargin: '200px' },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [hasMore, status, loadMore]);
+  const paginationProps = {
+    currentPage,
+    totalPages,
+    onPageChange: handlePageChange,
+    totalItems: traders.length,
+    itemsPerPage: ITEMS_PER_PAGE,
+  };
 
   return (
-    <div>
+    <section>
+      <div className="section-head">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width={14} height={14} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 3h6v3a3 3 0 1 1-6 0V3z" />
+              <path d="M11 4h2v1a2 2 0 0 1-2 2M5 4H3v1a2 2 0 0 0 2 2M6 13h4M8 9v4" />
+            </svg>
+            <div className="section-title">Trader Leaderboard</div>
+            <span className="pill pill-active">
+              <span className="dot dot-live" /> Live
+            </span>
+          </div>
+          <div className="section-sub" style={{ marginTop: 4 }}>
+            Ranked by ROI &middot; {traders.length} traders &middot; powered by CoinGecko
+          </div>
+        </div>
+      </div>
+
       <LeaderboardFilters
         sortField={sortField}
         sortDirection={sortDirection}
@@ -111,76 +125,83 @@ export function LeaderboardView() {
       />
 
       {status === 'loading' && (
-        <GlassCard padding="none">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <TableHead />
-              <tbody>
-                <SkeletonRows />
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
+        <div className="leaderboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+          {Array.from({ length: 6 }).map((_, i) => <TraderCardSkeleton key={i} />)}
+        </div>
       )}
 
       {status === 'error' && (
-        <GlassCard className="py-10 text-center">
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-bearish/[0.08]">
-            <svg className="h-5 w-5 text-bearish" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+        <div className="glass" style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{
+            width: 50, height: 50, margin: '0 auto 12px',
+            borderRadius: 12, background: 'rgba(255,87,87,0.10)',
+            border: '1px solid rgba(255,87,87,0.25)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--color-bearish)',
+          }}>
+            <svg width={22} height={22} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M8 4v4M8 11v.5" />
+              <circle cx="8" cy="8" r="6" />
             </svg>
           </div>
-          <p className="mb-4 text-[14px] text-bearish">{error}</p>
-          <button
-            onClick={reload}
-            className="rounded-lg bg-accent-green/[0.08] px-4 py-2 text-[13px] font-semibold text-accent-green transition-colors hover:bg-accent-green/[0.15]"
-          >
-            Retry
+          <div style={{ fontWeight: 600, fontSize: 14 }}>Failed to load leaderboard</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 4, marginBottom: 16 }}>
+            {error || 'CoinGecko rate limit reached. Retrying with exponential backoff.'}
+          </div>
+          <button className="btn" onClick={reload}>
+            <svg width={13} height={13} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 8a5 5 0 1 1-1.5-3.5M13 3v2.5h-2.5" />
+            </svg>
+            Retry now
           </button>
-        </GlassCard>
+        </div>
       )}
 
       {status === 'success' && traders.length === 0 && (
-        <GlassCard>
-          <EmptyState
-            title="No results found"
-            description="Try adjusting your search or filters."
-            icon={
-              <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-              </svg>
-            }
-          />
-        </GlassCard>
+        <div className="glass" style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{
+            width: 50, height: 50, margin: '0 auto 12px',
+            borderRadius: 12, background: 'rgba(255,255,255,0.04)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--color-text-muted)',
+          }}>
+            <svg width={22} height={22} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="7" cy="7" r="4.5" />
+              <path d="m13 13-2.6-2.6" />
+            </svg>
+          </div>
+          <div style={{ fontWeight: 600, fontSize: 14 }}>No traders found</div>
+          <div style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 4 }}>
+            Try adjusting your search or filters.
+          </div>
+        </div>
       )}
 
       {status === 'success' && traders.length > 0 && (
-        <GlassCard padding="none">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <TableHead />
-              <tbody>
-                {traders.map((trader, index) => (
-                  <TraderCard
-                    key={trader.id}
-                    trader={trader}
-                    rank={index + 1}
-                    onClick={handleTraderClick}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </GlassCard>
-      )}
+        <>
+          <Pagination {...paginationProps} />
 
-      <div ref={observerRef} className="h-4" />
+          <div className="leaderboard-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+            {paginatedTraders.map((trader, index) => (
+              <TraderCard
+                key={trader.id}
+                trader={trader}
+                rank={(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                timeframe={timeframe}
+                onClick={handleTraderClick}
+              />
+            ))}
+          </div>
+
+          <Pagination {...paginationProps} />
+        </>
+      )}
 
       <TraderDetailModal
         trader={selectedTrader}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-    </div>
+    </section>
   );
 }

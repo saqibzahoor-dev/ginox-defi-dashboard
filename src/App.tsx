@@ -1,5 +1,5 @@
-import { Toaster } from 'react-hot-toast';
 import { ErrorBoundary } from '@/shared/components';
+import { ToastStack } from '@/shared/components/ToastStack';
 import { WalletPanel } from '@/features/wallet/components';
 import { PriceTicker } from '@/features/ticker/components';
 import { LeaderboardView } from '@/features/leaderboard/components';
@@ -8,51 +8,36 @@ import { Header } from '@/app/Header';
 
 export function App() {
   return (
-    <div className="min-h-screen bg-page">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 3000,
-          style: {
-            background: '#151722',
-            color: '#ECEEF4',
-            border: '1px solid #1E2236',
-            fontSize: '13px',
-            borderRadius: '10px',
-            padding: '12px 16px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-          },
-          success: { iconTheme: { primary: '#00E5A0', secondary: '#fff' } },
-          error: { iconTheme: { primary: '#FF4757', secondary: '#fff' } },
-        }}
-      />
-
+    <>
       <Header />
+      <ToastStack />
 
-      <div className="mx-auto max-w-[1440px] px-5 sm:px-8">
-        <div className="border-b border-surface-border py-4">
+      <main style={{ maxWidth: 1440, margin: '0 auto', padding: '0 28px 60px' }}>
+        <div id="section-ticker">
           <ErrorBoundary moduleName="Price Ticker">
             <PriceTicker />
           </ErrorBoundary>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 py-6 xl:grid-cols-[1fr_380px]">
-          <div className="min-w-0">
+        <div className="layout-main" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'flex-start' }}>
+          <div id="section-leaderboard" style={{ minWidth: 0 }}>
             <ErrorBoundary moduleName="Leaderboard">
               <LeaderboardView />
             </ErrorBoundary>
           </div>
 
-          <div className="space-y-5">
+          <div className="right-col" style={{ display: 'flex', flexDirection: 'column', gap: 18, position: 'sticky', top: 80 }}>
             <ErrorBoundary moduleName="Wallet">
               <WalletPanel />
             </ErrorBoundary>
-            <ErrorBoundary moduleName="Portfolio">
-              <PortfolioView />
-            </ErrorBoundary>
+            <div id="section-portfolio">
+              <ErrorBoundary moduleName="Portfolio">
+                <PortfolioView />
+              </ErrorBoundary>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

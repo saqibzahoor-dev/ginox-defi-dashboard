@@ -24,7 +24,7 @@ export function useWalletData() {
     query: { enabled: isConnected },
   });
 
-  const { data: usdcRawBalance } = useReadContract({
+  const { data: usdcRawBalance, isLoading: isUsdcBalanceLoading } = useReadContract({
     address: usdcAddress,
     abi: ERC20_ABI,
     functionName: 'balanceOf',
@@ -139,6 +139,7 @@ export function useWalletData() {
     nativeSymbol,
     usdcBalance,
     isNativeBalanceLoading,
+    isUsdcBalanceLoading,
     networkInfo,
     isSwitching,
     switchError,

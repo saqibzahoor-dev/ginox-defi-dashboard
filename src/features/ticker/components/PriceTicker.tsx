@@ -9,8 +9,25 @@ export function PriceTicker() {
   const hasData = Object.keys(tickers).length > 0;
 
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
+    <section style={{ padding: '18px 0' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
+          <span className="eyebrow" style={{ color: '#fff', fontWeight: 700 }}>Live Markets</span>
+          <StatusBadge status={connectionStatus} />
+          {connectionStatus === 'disconnected' && (
+            <button className="btn btn-sm" onClick={reconnect} style={{ marginLeft: 4 }}>
+              <svg width={13} height={13} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13 8a5 5 0 1 1-1.5-3.5M13 3v2.5h-2.5" />
+              </svg>
+              Reconnect
+            </button>
+          )}
+          {connectionStatus === 'reconnecting' && (
+            <span style={{ fontSize: 11, color: 'var(--color-warning)', fontWeight: 500 }}>Retry {retryCount}/5</span>
+          )}
+        </div>
+      </div>
+      <div className="ticker-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
         {!hasData
           ? Array.from({ length: 3 }).map((_, i) => <SkeletonTicker key={i} />)
           : DISPLAY_ORDER.map((symbol) => {
@@ -25,20 +42,6 @@ export function PriceTicker() {
               );
             })}
       </div>
-      <div className="flex items-center gap-3">
-        <StatusBadge status={connectionStatus} />
-        {connectionStatus === 'disconnected' && (
-          <button
-            onClick={reconnect}
-            className="rounded-lg bg-accent-green/[0.08] px-3 py-1.5 text-[12px] font-semibold text-accent-green transition-colors hover:bg-accent-green/[0.15]"
-          >
-            Reconnect
-          </button>
-        )}
-        {connectionStatus === 'reconnecting' && (
-          <span className="text-[12px] font-medium text-warning">Retry {retryCount}/5</span>
-        )}
-      </div>
-    </div>
+    </section>
   );
 }
