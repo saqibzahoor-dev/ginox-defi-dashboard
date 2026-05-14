@@ -6,6 +6,7 @@ import { NetworkBadge } from './NetworkBadge';
 import { WrongNetworkBanner } from './WrongNetworkBanner';
 import { SignMessageModal } from './SignMessageModal';
 import { ConnectWalletModal } from './ConnectWalletModal';
+import { useConnectWallet } from '../hooks/useConnectWallet';
 import { useClipboard } from '@/shared/hooks/useClipboard';
 import { toast } from '@/stores/toastStore';
 import { supportedChains } from '@/config/chains';
@@ -29,7 +30,7 @@ export function WalletPanel() {
   const { disconnect } = useDisconnect();
   const { copied, copy } = useClipboard();
   const [showSignModal, setShowSignModal] = useState(false);
-  const [showConnectModal, setShowConnectModal] = useState(false);
+  const { open: openConnect, customOpen, closeCustom } = useConnectWallet();
 
   // Track connection state for toasts
   const prevConnected = useRef(isConnected);
@@ -84,7 +85,7 @@ export function WalletPanel() {
           </div>
           <button
             className="btn btn-primary"
-            onClick={() => setShowConnectModal(true)}
+            onClick={openConnect}
             style={{ width: '100%', height: 44, justifyContent: 'center', gap: 8, fontWeight: 600, letterSpacing: '-0.005em' }}
           >
             <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
@@ -98,7 +99,7 @@ export function WalletPanel() {
             MetaMask &middot; WalletConnect &middot; Coinbase Wallet
           </div>
         </div>
-        <ConnectWalletModal isOpen={showConnectModal} onClose={() => setShowConnectModal(false)} />
+        <ConnectWalletModal isOpen={customOpen} onClose={closeCustom} />
       </div>
     );
   }

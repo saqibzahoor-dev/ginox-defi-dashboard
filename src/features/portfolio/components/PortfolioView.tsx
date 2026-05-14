@@ -5,6 +5,7 @@ import { AllocationChart } from './AllocationChart';
 import { TokenRow } from './TokenRow';
 import { AddTokenModal } from './AddTokenModal';
 import { ConnectWalletModal } from '@/features/wallet/components';
+import { useConnectWallet } from '@/features/wallet/hooks/useConnectWallet';
 import { Skeleton } from '@/shared/components';
 import { toast } from '@/stores/toastStore';
 import { useTickerStore } from '@/stores/tickerStore';
@@ -24,7 +25,7 @@ export function PortfolioView() {
   } = usePortfolio();
 
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showConnectModal, setShowConnectModal] = useState(false);
+  const { open: openConnect, customOpen, closeCustom } = useConnectWallet();
   const tickers = useTickerStore((s) => s.tickers);
   const addManualToken = usePortfolioStore((s) => s.addManualToken);
 
@@ -84,7 +85,7 @@ export function PortfolioView() {
           </div>
           <button
             className="btn btn-primary"
-            onClick={() => setShowConnectModal(true)}
+            onClick={openConnect}
             style={{ width: '100%', height: 44, justifyContent: 'center', gap: 8, fontWeight: 600, letterSpacing: '-0.005em' }}
           >
             <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
@@ -95,7 +96,7 @@ export function PortfolioView() {
             <span>Connect Wallet</span>
           </button>
         </div>
-        <ConnectWalletModal isOpen={showConnectModal} onClose={() => setShowConnectModal(false)} />
+        <ConnectWalletModal isOpen={customOpen} onClose={closeCustom} />
       </div>
     );
   }

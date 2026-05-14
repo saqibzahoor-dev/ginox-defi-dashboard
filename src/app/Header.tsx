@@ -7,6 +7,7 @@ import { useLeaderboardStore } from '@/stores/leaderboardStore';
 import { debounce } from '@/shared/utils/debounce';
 import { SEARCH_DEBOUNCE_MS } from '@/config/constants';
 import { ConnectWalletModal } from '@/features/wallet/components';
+import { useConnectWallet } from '@/features/wallet/hooks/useConnectWallet';
 
 function Logo() {
   return (
@@ -267,7 +268,7 @@ function HeaderSearch() {
 
 export function Header() {
   const { isConnected } = useAccount();
-  const [connectOpen, setConnectOpen] = useState(false);
+  const { open: openConnect, customOpen, closeCustom } = useConnectWallet();
 
   return (
     <header style={{
@@ -321,7 +322,7 @@ export function Header() {
         {!isConnected ? (
           <button
             className="btn btn-primary"
-            onClick={() => setConnectOpen(true)}
+            onClick={openConnect}
             style={{ gap: 8, fontWeight: 600, letterSpacing: '-0.005em', padding: '0 16px' }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} aria-hidden="true">
@@ -335,7 +336,7 @@ export function Header() {
           <ConnectedPill />
         )}
       </div>
-      <ConnectWalletModal isOpen={connectOpen} onClose={() => setConnectOpen(false)} />
+      <ConnectWalletModal isOpen={customOpen} onClose={closeCustom} />
     </header>
   );
 }
